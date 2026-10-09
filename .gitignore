@@ -1,0 +1,18 @@
+# 1. 屏蔽大型依赖与构建生成文件（体积巨大，绝对不传）
+node_modules/
+staging/
+
+
+# 2. 屏蔽系统与包管理器日志
+*.log
+npm-debug.log*
+yarn-debug.log*
+
+.DS_Store
+Thumbs.db
+
+
+# 4. 屏蔽 SQLite 运行时临时锁文件（保留 data/ 目录下的 .db 主文件）
+*.db-journal
+*.db-wal
+*.db-shm
