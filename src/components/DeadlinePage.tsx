@@ -283,7 +283,7 @@ export default function DeadlinePage() {
     window.open(formattedUrl, '_blank', 'noopener,noreferrer')
   }
 
-  // 改造图片持久化上传机制（彻底避免 Base64 膨胀）
+  // 图片持久化上传：仅保存纯相对路径（/uploads/...），隐藏 IP 且换 IP 不失效
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
@@ -297,6 +297,7 @@ export default function DeadlinePage() {
     try {
       setUploadingImage(true)
       const uploadedUrl = await uploadImageFile(file)
+      // 直接保存短相对路径，不拼接任何 host/ip
       setEditingItem((prev) => ({ ...prev, image: uploadedUrl }))
     } catch (err: any) {
       alert('图片上传失败: ' + (err.message || '网络异常'))
@@ -922,6 +923,7 @@ export default function DeadlinePage() {
                     </div>
                   )}
 
+                  {/* 背景图：浏览器原生支持 /uploads/ 相对路径解析，换 IP 域名永不失效 */}
                   <div
                     className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-105"
                     style={{ backgroundImage: `url(${item.image})` }}
@@ -1521,9 +1523,10 @@ export default function DeadlinePage() {
                     {uploadingImage && (
                       <p className="text-[11px] text-blue-400 mt-1">正在上传图片并持久化至服务器...</p>
                     )}
+                    {/* type="text" 解除浏览器拦截，且只展示纯相对路径 */}
                     <input
-                      type="url"
-                      placeholder="或输入图片 URL: https://..."
+                      type="text"
+                      placeholder="或输入图片 URL / 服务器相对路径 (/uploads/...)"
                       value={editingItem.image || ''}
                       onChange={(e) => setEditingItem({ ...editingItem, image: e.target.value })}
                       className="mt-2 w-full rounded-xl border border-neutral-800 bg-neutral-800/90 px-3.5 py-1.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
